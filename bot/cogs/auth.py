@@ -8,7 +8,6 @@ from discord.ext import commands
 import os
 from .db import DatabaseCog
 import yaml
-from dotenv import load_dotenv
 
 
 class AuthenticationCog(commands.Cog):

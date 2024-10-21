@@ -7,7 +7,6 @@ from typing import Optional, Union
 import discord
 from discord import app_commands
 from discord.ext import commands
-from dotenv import load_dotenv
 import os
 
 
@@ -17,7 +16,6 @@ class DeveloperCog(commands.Cog):
     """
 
     config = yaml.safe_load(open("config.yml"))
-    load_dotenv()
 
     def __init__(self, client: commands.Bot):
         self.client = client

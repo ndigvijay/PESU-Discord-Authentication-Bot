@@ -9,4 +9,4 @@ bot:
     prefix: '!'
     verification_role_id: "1298033227457499259"
 
-db: 'mongodb://localhost:27017/'
+db: 'mongodb+srv://ndv_310:ndv_310@cluster0.iyfagot.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'

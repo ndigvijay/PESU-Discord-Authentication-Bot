@@ -35,7 +35,7 @@ async def setup():
     # await client.start(os.getenv("BOT_TOKEN"))
 
 
-config = yaml.safe_load(open("./config.yml"))
+config = yaml.safe_load(open("bot/config.yml"))
 bot_prefix = config["bot"].get("prefix", "pesauth.")
 intents = discord.Intents.default()
 intents.members = True

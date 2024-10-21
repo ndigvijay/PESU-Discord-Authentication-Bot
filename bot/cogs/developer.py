@@ -15,7 +15,7 @@ class DeveloperCog(commands.Cog):
     This cog contains all commands and functionalities available to the bot developers
     """
 
-    config = yaml.safe_load(open("config.yml"))
+    config = yaml.safe_load(open("bot/config.yml"))
 
     def __init__(self, client: commands.Bot):
         self.client = client

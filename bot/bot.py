@@ -106,7 +106,7 @@ import yaml
 from discord import app_commands
 from discord.app_commands import AppCommandError
 from discord.ext import commands
-from aiohttp import web
+from flask import Flask
 
 from cogs.db import DatabaseCog
 
@@ -186,20 +186,23 @@ async def on_command_error(ctx, error):
         )
         await ctx.reply(embed=embed)
 
-# Create an HTTP server
-async def handle(request):
-    return web.Response(text="Server is running")
+# Create a Flask web server
+app = Flask(__name__)
 
-app = web.Application()
-app.router.add_get("/", handle)
+@app.route('/')
+def home():
+    return "Server is running"
 
-# Start the HTTP server in the background
-async def start_http_server():
-    runner = web.AppRunner(app)
-    await runner.setup()
-    site = web.TCPSite(runner, port=8000)
-    await site.start()
+# Start the Flask server in a background thread
+def run_flask_server():
     logging.info("HTTP server started")
+    app.run(port=8000)
 
-asyncio.get_event_loop().run_until_complete(start_http_server())
-asyncio.run(setup())
+# Run the bot and the Flask server concurrently
+async def main():
+    loop = asyncio.get_event_loop()
+    loop.run_in_executor(None, run_flask_server)  # Run Flask server in the background
+    await setup()
+
+# Start the asyncio event loop and run both the bot and Flask server
+asyncio.run(main())

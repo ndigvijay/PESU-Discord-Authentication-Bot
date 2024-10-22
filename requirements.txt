@@ -17,3 +17,5 @@ setuptools==68.0.0
 urllib3==2.0.4
 wheel==0.38.4
 yarl==1.9.2
+Flask==2.3.3
+

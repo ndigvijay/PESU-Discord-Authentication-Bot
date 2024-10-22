@@ -51,7 +51,7 @@ class AuthenticationCog(commands.Cog):
         #     verification_role_id = self.db.get_verification_role_for_server(guild_id=interaction.guild_id)
         # except AttributeError:
         #     verification_role_id = None
-        verification_role_id = 1298033227457499259
+        verification_role_id = 1298119735421960275
         # print(verification_role_id)
         if verification_role_id is not None:
             verification_role = interaction.guild.get_role(verification_role_id)

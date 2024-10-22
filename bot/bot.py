@@ -197,7 +197,7 @@ app.router.add_get("/", handle)
 async def start_http_server():
     runner = web.AppRunner(app)
     await runner.setup()
-    site = web.TCPSite(runner, '0.0.0.0', int(os.environ.get("PORT", 8080)))
+    site = web.TCPSite(runner, '0.0.0.0',8000)
     await site.start()
     logging.info("HTTP server started")
 

@@ -107,6 +107,7 @@ from discord import app_commands
 from discord.app_commands import AppCommandError
 from discord.ext import commands
 from flask import Flask
+import os
 
 from cogs.db import DatabaseCog
 
@@ -196,7 +197,8 @@ def home():
 # Start the Flask server in a background thread
 def run_flask_server():
     logging.info("HTTP server started")
-    app.run(port=8000)
+    port = int(os.getenv("PORT", 8000))
+    app.run(port=port)
 
 # Run the bot and the Flask server concurrently
 async def main():

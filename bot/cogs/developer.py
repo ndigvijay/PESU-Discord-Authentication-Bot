@@ -20,13 +20,21 @@ class DeveloperCog(commands.Cog):
     def __init__(self, client: commands.Bot):
         self.client = client
         self.developer_user_ids = client.config["bot"]["developer_user_ids"]
-        # self.developer_user_ids = os.getenv("DEVELOPER_USER_ID")
         self.developer_channel_ids = client.config["bot"]["developer_channel_ids"]
-        # self.developer_channel_ids = os.getenv("DEVELOPER_CHANNEL_ID")
-        self.developer_log_channels = [
-            self.client.get_channel(channel_id)
-            for channel_id in self.developer_channel_ids
-        ]
+        self.developer_log_channels = []
+
+    @commands.Cog.listener()
+    async def on_ready(self):
+        # Fetch the channels after the bot is fully ready
+        if not self.developer_log_channels:  # Ensure we do not fetch channels multiple times
+            try:
+                self.developer_log_channels = [
+                    await self.client.fetch_channel(channel_id)
+                    for channel_id in self.developer_channel_ids
+                ]
+                logging.info("Developer channels successfully fetched.")
+            except Exception as e:
+                logging.error(f"Failed to fetch developer channels: {e}")
 
     # @staticmethod
     def check_developer_permissions(type: str = "app"):
@@ -44,7 +52,7 @@ class DeveloperCog(commands.Cog):
         return commands.check(predicate)
     
     dev_commands = app_commands.Group(name="dev", description="Developer commands", guild_ids=config["bot"]["developer_guild_ids"], guild_only=True)
-    # dev_commands = app_commands.Group(name="dev", description="Developer commands", guild_ids=os.getenv("DEVELOPER_GUILD_ID"), guild_only=True)
+
     @dev_commands.command(name="gitpull", description="Pull the latest changes from GitHub")
     @check_developer_permissions()
     async def git_pull(self, interaction: discord.Interaction):
@@ -64,7 +72,7 @@ class DeveloperCog(commands.Cog):
 
         output = list()
         p = subprocess.Popen(["git", "pull"], stdout=subprocess.PIPE)
-        for line in iter(p.stdout.readline, ""):
+        for line in iter(p.stdout.readline, b""):
             if not line:
                 break
             line = str(line.rstrip(), "utf-8", "ignore").strip()
@@ -105,7 +113,7 @@ class DeveloperCog(commands.Cog):
         if guild_id is None:
             guild = ctx.guild
         else:
-            guild = await self.client.get_guild(guild_id)
+            guild = await self.client.fetch_guild(guild_id)
         logging.info(f"Synchronizing commands with Discord for guild {guild.id}")
         await self.client.tree.sync(guild=guild)
         embed = discord.Embed(

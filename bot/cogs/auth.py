@@ -68,7 +68,8 @@ class AuthenticationCog(commands.Cog):
                 authentication_result = self.check_pesu_academy_credentials(username=username, password=password)
                 if authentication_result["status"]:
                     try:
-                        await interaction.user.remove_roles(old_role_id)
+                        old_role = interaction.guild.get_role(old_role_id)
+                        await interaction.user.remove_roles(old_role)
                         await interaction.user.add_roles(verification_role)
                     except discord.Forbidden:
                         embed = discord.Embed(

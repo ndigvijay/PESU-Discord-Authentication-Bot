@@ -22,7 +22,7 @@ class AuthenticationCog(commands.Cog):
         #     config = yaml.safe_load(file)
         # self.verification_role_id = 
         # print(config)
-        # print(self.verification_role_id)
+        # print(self.verification_role_id
 
     @staticmethod
     def check_pesu_academy_credentials(username: str, password: str) -> Optional[dict]:
@@ -52,6 +52,7 @@ class AuthenticationCog(commands.Cog):
         # except AttributeError:
         #     verification_role_id = None
         verification_role_id = 1298119735421960275
+        old_role_id = 1188111493976305806
         # print(verification_role_id)
         if verification_role_id is not None:
             verification_role = interaction.guild.get_role(verification_role_id)
@@ -61,11 +62,13 @@ class AuthenticationCog(commands.Cog):
                     description=f"You are already verified on this server",
                     color=discord.Color.orange(),
                 )
+                
                 await interaction.followup.send(embed=embed)
             else:
                 authentication_result = self.check_pesu_academy_credentials(username=username, password=password)
                 if authentication_result["status"]:
                     try:
+                        await interaction.user.remove_roles(old_role_id)
                         await interaction.user.add_roles(verification_role)
                     except discord.Forbidden:
                         embed = discord.Embed(

@@ -243,7 +243,7 @@ class AuthenticationCog(commands.Cog):
 
         # Proceed with posting the confession
         embed = discord.Embed(
-            title="Anonymous Confession",
+            title="anonymous message",
             color=discord.Color.random(),
             description=confession,
             timestamp=datetime.now()

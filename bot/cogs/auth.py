@@ -232,7 +232,7 @@ class AuthenticationCog(commands.Cog):
     #     self.db.add_confession(user_id=user_id, message_id=embed.id)
     # ------------
     
-    @app_commands.command(name="confess", description="Submits an anonymous confession")
+    @app_commands.command(name="anon", description="Submits an anonymous confession")
     async def confess(self, interaction: discord.Interaction, confession: str, msg_id: str = ''):
         user_id = str(interaction.user.id)
         

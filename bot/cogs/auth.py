@@ -232,38 +232,40 @@ class AuthenticationCog(commands.Cog):
     #     self.db.add_confession(user_id=user_id, message_id=embed.id)
     # ------------
     
-    @app_commands.command(name="anon", description="Submits an anonymous confession")
-    async def confess(self, interaction: discord.Interaction, confession: str, msg_id: str = ''):
-        user_id = str(interaction.user.id)
+    #working
+    
+    # @app_commands.command(name="anon", description="Submits an anonymous confession")
+    # async def confess(self, interaction: discord.Interaction, confession: str, msg_id: str = ''):
+    #     user_id = str(interaction.user.id)
         
-        # Check if the user is banned from submitting confessions
-        if self.db.is_user_banned_from_confessions(user_id):
-            await interaction.response.send_message(":x: You are banned from submitting confessions.", ephemeral=True)
-            return
+    #     # Check if the user is banned from submitting confessions
+    #     if self.db.is_user_banned_from_confessions(user_id):
+    #         await interaction.response.send_message(":x: You are banned from submitting confessions.", ephemeral=True)
+    #         return
 
-        # Proceed with posting the confession
-        embed = discord.Embed(
-            title="anonymous message",
-            color=discord.Color.random(),
-            description=confession,
-            timestamp=datetime.now()
-        )
+    #     # Proceed with posting the confession
+    #     embed = discord.Embed(
+    #         title="anonymous message",
+    #         color=discord.Color.random(),
+    #         description=confession,
+    #         timestamp=datetime.now()
+    #     )
 
-        confession_channel = self.client.get_channel(1299721480443007038)
-        try:
-            # If msg_id is provided, reply to that message
-            msg_id = int(msg_id)
-            msgObj = await confession_channel.fetch_message(msg_id)
-            sent_message = await msgObj.reply(embed=embed)
-        except ValueError:
-            # If no valid msg_id is provided, send a new message
-            sent_message = await confession_channel.send(embed=embed)
+    #     confession_channel = self.client.get_channel(1299721480443007038)
+    #     try:
+    #         # If msg_id is provided, reply to that message
+    #         msg_id = int(msg_id)
+    #         msgObj = await confession_channel.fetch_message(msg_id)
+    #         sent_message = await msgObj.reply(embed=embed)
+    #     except ValueError:
+    #         # If no valid msg_id is provided, send a new message
+    #         sent_message = await confession_channel.send(embed=embed)
         
-        # Send confirmation to the user
-        await interaction.response.send_message(":white_check_mark: Your confession has been submitted.", ephemeral=True)
+    #     # Send confirmation to the user
+    #     await interaction.response.send_message(":white_check_mark: Your confession has been submitted.", ephemeral=True)
         
-        # Store confession in the database with the sent message's ID
-        self.db.add_confession(user_id=user_id, message_id=str(sent_message.id))
+    #     # Store confession in the database with the sent message's ID
+    #     self.db.add_confession(user_id=user_id, message_id=str(sent_message.id))
     
     # ----------
     # @app_commands.command(name="confessban", description="Bans a user from submitting confessions")

@@ -234,7 +234,7 @@ class AuthenticationCog(commands.Cog):
     
     #working
     
-    # @app_commands.command(name="anon", description="Submits an anonymous confession")
+    # @app_commands.command(name="anon", description="Submits an anonymous message")
     # async def confess(self, interaction: discord.Interaction, confession: str, msg_id: str = ''):
     #     user_id = str(interaction.user.id)
         
@@ -267,8 +267,8 @@ class AuthenticationCog(commands.Cog):
     #     # Store confession in the database with the sent message's ID
     #     self.db.add_confession(user_id=user_id, message_id=str(sent_message.id))
     
-    # ----------
-    # @app_commands.command(name="confessban", description="Bans a user from submitting confessions")
+    # # ----------
+    # @app_commands.command(name="anonban", description="Bans a user from submitting confessions")
     # async def confessban(self, interaction: discord.Interaction, member: discord.Member):
     #     if not any(role.id in [self.admin.id, self.mods.id] for role in interaction.user.roles):
     #         await interaction.response.send_message(":x: You are not authorized for this action.", ephemeral=True)
@@ -282,7 +282,7 @@ class AuthenticationCog(commands.Cog):
     #     except discord.Forbidden:
     #         pass
 
-    # @app_commands.command(name="confessunban", description="Unbans a user from submitting confessions")
+    # @app_commands.command(name="anonunban", description="Unbans a user from submitting confessions")
     # async def confessunban(self, interaction: discord.Interaction, member: discord.Member):
     #     if not any(role.id in [self.admin.id, self.mods.id] for role in interaction.user.roles):
     #         await interaction.response.send_message(":x: You are not authorized for this action.", ephemeral=True)
@@ -300,6 +300,67 @@ class AuthenticationCog(commands.Cog):
     # async def flush_confessions(self):
     #     """Clears cached confessions data daily."""
     #     self.confessions.clear()
+    
+    
+    # modified anon working
+    @app_commands.command(name="anon", description="Submits an anonymous message")
+    async def confess(self, interaction: discord.Interaction, confession: str, msg_id: str = ''):
+        user_id = str(interaction.user.id)
+        
+        # Check if the user is banned from submitting confessions
+        if self.db.is_user_banned_from_confessions(user_id):
+            await interaction.response.send_message(":x: You are banned from submitting confessions.", ephemeral=True)
+            return
+
+        # Proceed with posting the confession
+        embed = discord.Embed(
+            title="Anonymous Message",
+            color=discord.Color.random(),
+            description=confession,
+            timestamp=datetime.now()
+        )
+
+        confession_channel = self.client.get_channel(1299721480443007038)
+        try:
+            # If msg_id is provided, reply to that message
+            msg_id = int(msg_id)
+            msgObj = await confession_channel.fetch_message(msg_id)
+            sent_message = await msgObj.reply(embed=embed)
+        except ValueError:
+            # If no valid msg_id is provided, send a new message
+            sent_message = await confession_channel.send(embed=embed)
+        
+        # Send confirmation to the user
+        await interaction.response.send_message(":white_check_mark: Your confession has been submitted.", ephemeral=True)
+        
+        # Store confession in the database with the sent message's ID
+        self.db.add_confession(user_id=user_id, message_id=str(sent_message.id))
+        
+    @app_commands.command(name="anonban", description="Bans a user from submitting confessions by message ID")
+    async def confessban(self, interaction: discord.Interaction, message_id: str):
+        # Check if the user is authorized to ban
+        if not any(role.id in [self.admin.id, self.mods.id] for role in interaction.user.roles):
+            await interaction.response.send_message(":x: You are not authorized for this action.", ephemeral=True)
+            return
+
+        # Look up the user ID associated with the message ID
+        user_id = self.db.get_user_by_message_id(message_id)
+        if not user_id:
+            await interaction.response.send_message(":x: No confession found with the provided message ID.", ephemeral=True)
+            return
+
+        # Ban the user
+        self.db.ban_user_from_confessions(user_id)
+        await interaction.response.send_message(f"User associated with message ID `{message_id}` has been banned.", ephemeral=True)
+        
+        # Attempt to notify the user
+        user = self.client.get_user(int(user_id))
+        if user:
+            try:
+                await user.send("You have been banned from submitting confessions.")
+            except discord.Forbidden:
+                pass
+
 
 
 async def setup(client: commands.Bot):

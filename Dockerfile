@@ -9,8 +9,17 @@
 FROM ubuntu:22.04
 
 RUN apt update -y && apt upgrade -y
-RUN apt install build-essential python3 python3-pip nano gnupg curl telnet -y
+RUN apt install build-essential curl gnupg nano telnet software-properties-common -y
 
+# Add deadsnakes PPA for Python 3.11 installation
+RUN add-apt-repository ppa:deadsnakes/ppa -y
+RUN apt update -y
+RUN apt install python3.11 python3.11-distutils python3.11-dev -y
+
+# Install pip for Python 3.11
+RUN curl -sS https://bootstrap.pypa.io/get-pip.py | python3.11
+
+# MongoDB setup
 RUN curl -fsSL https://pgp.mongodb.com/server-7.0.asc | \
    gpg -o /etc/apt/trusted.gpg.d/mongodb-server-7.0.gpg \
    --dearmor
@@ -25,7 +34,8 @@ COPY bot /bot
 COPY requirements.txt /requirements.txt
 COPY config.yml /config.yml
 
-RUN pip3 install -r requirements.txt
+# Install requirements using Python 3.11
+RUN python3.11 -m pip install -r requirements.txt
 
 EXPOSE 27017
 RUN mkdir -p /data/db

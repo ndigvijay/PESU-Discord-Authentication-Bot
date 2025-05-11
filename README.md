@@ -12,8 +12,9 @@ A simple bot to authenticate users in any server using their PESU credentials.
 ### Run/Deploy the bot yourself
 
 1. Clone the repository
-2. Install the dependencies using `pip install -r requirements.txt`
-3. Create a `config.yml` file in the root directory of the project and add the following:
+2. Make sure you have Python 3.10 installed
+3. Install the dependencies using `pip install -r requirements.txt`
+4. Create a `config.yml` file in the root directory of the project and add the following:
     ```yaml
     bot:
         token: 'your-bot-token'
@@ -30,7 +31,7 @@ A simple bot to authenticate users in any server using their PESU credentials.
         prefix: 'bot-prefix'
     db: 'path/to/mongo_database/file.db' # if local host - 'mongodb://localhost:27017/'
     ```
-4. Run the bot using the `bot.py` file
+5. Run the bot using the `bot.py` file
 
 <hr>
 

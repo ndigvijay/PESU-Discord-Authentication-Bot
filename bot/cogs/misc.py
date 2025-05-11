@@ -173,7 +173,7 @@ class MiscCog(commands.Cog):
         self.muted_role_name = 'Didnt-Listen-to-Mother'
         self.mutedict = {}  # In-memory tracking for active mutes
         self.check_mutes.start()
-        self.client.add_listener(self.on_ready, 'on_ready')
+        # self.client.add_listener(self.on_ready, 'on_ready')
 
     @commands.Cog.listener()
     async def on_ready(self):

@@ -115,7 +115,7 @@ def home():
 # Start the Flask server in a background thread
 def run_flask_server():
     logging.info("HTTP server started")
-    port = int(os.getenv("PORT", 8089))
+    port = int(os.getenv("PORT", 8080))
     app.run(host='0.0.0.0', port=port, debug=True, use_reloader=False)
 
 # Run the bot and the Flask server concurrently

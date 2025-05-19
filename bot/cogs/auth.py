@@ -35,12 +35,43 @@ class AuthenticationCog(commands.Cog):
     async def authenticate(self, interaction: discord.Interaction, username: str, password: str):
         logging.info(f"Authenticating {interaction.user}")
         await interaction.response.defer(ephemeral=True)
-        verification_role_id = 1298119735421960275  # Replace with dynamic retrieval if needed
-        old_role_id = 1188111493976305806
+        verification_role_id = 1373648829051568259  # Replace with dynamic retrieval if needed
+        old_role_id = 1373650258013454376
+        guild_id = 1340719908383752255  # The guild ID where verification is happening
+
+        # Get the guild object directly using the guild ID
+        guild = self.client.get_guild(guild_id)
+        if not guild:
+            embed = discord.Embed(
+                title="Verification Failed",
+                description="Could not find the server. Please try again later or contact an admin.",
+                color=discord.Color.red(),
+            )
+            await interaction.followup.send(embed=embed)
+            return
 
         if verification_role_id:
-            verification_role = interaction.guild.get_role(verification_role_id)
-            if verification_role in interaction.user.roles:
+            verification_role = guild.get_role(verification_role_id)
+            if not verification_role:
+                embed = discord.Embed(
+                    title="Verification Failed",
+                    description=f"Could not find the verification role (ID: {verification_role_id}). Please contact an admin.",
+                    color=discord.Color.red(),
+                )
+                await interaction.followup.send(embed=embed)
+                return
+                
+            member = guild.get_member(interaction.user.id)
+            if not member:
+                embed = discord.Embed(
+                    title="Verification Failed",
+                    description="Could not find your user in the server. Please make sure you're in the server and try again.",
+                    color=discord.Color.red(),
+                )
+                await interaction.followup.send(embed=embed)
+                return
+                
+            if verification_role in member.roles:
                 embed = discord.Embed(
                     title="Verification Failed",
                     description="You are already verified on this server",
@@ -51,9 +82,10 @@ class AuthenticationCog(commands.Cog):
                 authentication_result = self.check_pesu_academy_credentials(username=username, password=password)
                 if authentication_result and authentication_result["status"]:
                     try:
-                        old_role = interaction.guild.get_role(old_role_id)
-                        await interaction.user.remove_roles(old_role)
-                        await interaction.user.add_roles(verification_role)
+                        old_role = guild.get_role(old_role_id)
+                        if old_role:
+                            await member.remove_roles(old_role)
+                        await member.add_roles(verification_role)
                     except discord.Forbidden:
                         embed = discord.Embed(
                             title="Verification Failed",
@@ -114,36 +146,36 @@ class AuthenticationCog(commands.Cog):
     # ------------
 
     @app_commands.command(name="anon", description="Submits an anonymous message")
-    async def confess(self, interaction: discord.Interaction, confession: str, msg_id: str = ''):
+    async def send_anon_message(self, interaction: discord.Interaction, message: str, msg_id: str = ''):
         user_id = str(interaction.user.id)
 
-        # Check if the user is banned from submitting confessions
+        # Check if the user is banned from submitting anonymous messages
         if self.db.is_user_banned_from_confessions(user_id):
-            await interaction.response.send_message(":x: You are banned from submitting confessions.", ephemeral=True)
+            await interaction.response.send_message(":x: You are banned from submitting anonymous messages.", ephemeral=True)
             return
 
-        # Proceed with posting the confession
+        # Proceed with posting the anonymous message
         embed = discord.Embed(
             title="anonymous message",
             color=discord.Color.random(),
-            description=confession,
+            description=message,
             timestamp=datetime.now()
         )
 
-        confession_channel = self.client.get_channel(1299721480443007038)
+        anon_channel = self.client.get_channel(1340719909121822729)  # Channel for anonymous messages
         try:
             # If msg_id is provided, reply to that message
             msg_id = int(msg_id)
-            msgObj = await confession_channel.fetch_message(msg_id)
+            msgObj = await anon_channel.fetch_message(msg_id)
             sent_message = await msgObj.reply(embed=embed)
         except ValueError:
             # If no valid msg_id is provided, send a new message
-            sent_message = await confession_channel.send(embed=embed)
+            sent_message = await anon_channel.send(embed=embed)
 
         # Send confirmation to the user
-        await interaction.response.send_message(":white_check_mark: Your confession has been submitted.", ephemeral=True)
+        await interaction.response.send_message(":white_check_mark: Your anonymous message has been submitted.", ephemeral=True)
 
-        # Store confession in the database with the sent message's ID
+        # Store message in the database with the sent message's ID
         self.db.add_confession(user_id=user_id, message_id=str(sent_message.id))
 
     # ----------

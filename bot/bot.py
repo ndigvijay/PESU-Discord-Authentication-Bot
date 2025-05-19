@@ -41,6 +41,15 @@ async def setup():
     for extn in client.extns:
         await client.load_extension(extn)
     logging.info(f"Successfully added all cogs. Starting bot now")
+    
+    # Sync application commands with Discord
+    try:
+        logging.info("Syncing commands with Discord")
+        await client.tree.sync()
+        logging.info("Successfully synced commands with Discord")
+    except Exception as e:
+        logging.error(f"Failed to sync commands with Discord: {e}")
+    
     await client.start(config["bot"]["token"])
 
 # Error handling
@@ -92,9 +101,9 @@ async def on_command_error(ctx, error):
         await ctx.reply(embed=embed)
 
 # New Snipe command
-@client.command(name="snipe")
-async def snipe(ctx):
-    await ctx.send("Snipe has been removed due to privacy reasons")
+@client.tree.command(name="snipe", description="Attempt to recover a deleted message")
+async def snipe(interaction: discord.Interaction):
+    await interaction.response.send_message("Snipe has been removed due to privacy reasons")
 
 # Create a Flask web server
 app = Flask(__name__)
@@ -106,7 +115,7 @@ def home():
 # Start the Flask server in a background thread
 def run_flask_server():
     logging.info("HTTP server started")
-    port = int(os.getenv("PORT", 8000))
+    port = int(os.getenv("PORT", 8089))
     app.run(host='0.0.0.0', port=port, debug=True, use_reloader=False)
 
 # Run the bot and the Flask server concurrently

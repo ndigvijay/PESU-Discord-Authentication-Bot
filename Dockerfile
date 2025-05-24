@@ -35,7 +35,9 @@ COPY requirements.txt /requirements.txt
 COPY config.yml /config.yml
 
 # Install requirements using Python 3.10
-RUN python3.10 -m pip install -r requirements.txt
+# RUN python3.10 -m pip install -r requirements.txt
+RUN python3.10 -m pip install --upgrade pip setuptools wheel && \
+    python3.10 -m pip install --no-cache-dir --ignore-installed blinker -r requirements.txt
 
 EXPOSE 27017
 RUN mkdir -p /data/db

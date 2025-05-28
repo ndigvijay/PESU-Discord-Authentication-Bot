@@ -1,23 +1,20 @@
 # PESU-Auth-Bot
 
-A simple bot to authenticate users in any server using their PESU credentials.
+A simple bot to authenticate users in any discord server using their PESU credentials.
 
 ## Usage
 
-1. Invite the bot to your server using this [link](https://discord.com/api/oauth2/authorize?client_id=1146109578241638593&permissions=1377007037446&scope=bot).
-2. Use the `/mod setup` command to assign an existing server role to verified users.
-3. Certain channel's access can be restricted to only the verified PESU users using the same role.
-4. The users can verify themselves using the `/auth` command anytime once the setup is done.
+The users can verify themselves using the `/auth` command anytime once the setup is done.
 
 ### Run/Deploy the bot yourself
 
 1. Clone the repository
 2. Make sure you have Python 3.10 installed
 3. Install the dependencies using `pip install -r requirements.txt`
-4. Create a `config.yml` file in the root directory of the project and add the following:
+4. modify the `config.yml` file in the root directory of the project:
     ```yaml
     bot:
-        token: 'your-bot-token'
+        token: ''
         developer_user_ids:
             - <discord_developer_id_1>
             - <discord_developer_id_2>
@@ -29,11 +26,10 @@ A simple bot to authenticate users in any server using their PESU credentials.
             - <discord_developer_channel_id_2>
 
         prefix: 'bot-prefix'
-    db: 'path/to/mongo_database/file.db' # if local host - 'mongodb://localhost:27017/'
+    db: '' # if local host - 'mongodb://localhost:27017/'
     ```
 5. Run the bot using the `bot.py` file
 
-<hr>
+add bot token and db url in env file
 
-Made with ❤️ by [Space-Gamer](https://github.com/Space-Gamer) and [Aditeya Baral
-](https://github.com/aditeyabaral)
+<hr>

@@ -1,160 +1,3 @@
-# import discord
-# from discord.ext import commands, tasks
-# import time
-# import re
-# import logging
-
-# class MiscCog(commands.Cog):
-#     """
-#     Cog for moderation commands, including mute and unmute.
-#     """
-
-#     def __init__(self, client: commands.Bot):
-#         self.client = client
-#         self.db = client.db  
-#         self.muted_role_name = 'Muted' 
-#         self.check_mutes.start()
-
-#     @tasks.loop(seconds=60)
-#     async def check_mutes(self):
-#         """
-#         Background task that checks for expired mutes every minute.
-#         """
-#         current_time = time.time()
-#         mutes = self.db.get_all_mutes()
-#         for mute in mutes:
-#             if current_time >= mute['end_time']:
-#                 guild = self.client.get_guild(mute['guild_id'])
-#                 if guild is None:
-#                     continue
-#                 member = guild.get_member(mute['user_id'])
-#                 if member:
-#                     muted_role = discord.utils.get(guild.roles, name=self.muted_role_name)
-#                     if muted_role:
-#                         try:
-#                             await member.remove_roles(muted_role, reason="Mute duration expired.")
-#                             logging.info(f"Unmuted {member} in guild {guild.name}")
-#                         except Exception as e:
-#                             logging.error(f"Error unmuting {member}: {e}")
-#                 self.db.remove_mute(mute['user_id'])
-
-#     @commands.command(name='mute')
-#     @commands.has_permissions(manage_roles=True)
-#     async def mute(self, ctx, member: discord.Member = None, time_str='', *, reason: str = 'No reason provided'):
-#         """
-#         Mutes a member for a specified duration.
-
-#         Usage: !mute @member 1h30m reason
-#         """
-#         if member is None:
-#             await ctx.send("Please mention a member to mute.")
-#             return
-#         if not time_str:
-#             await ctx.send("Please specify a duration for the mute (e.g., 1h30m).")
-#             return
-
-#         # Allow self-muting
-#         if member == ctx.author:
-#             pass  # Allow self-muting
-#         else:
-#             # Prevent muting higher roles
-#             if member.top_role >= ctx.author.top_role and ctx.author != ctx.guild.owner:
-#                 await ctx.send("You cannot mute a member with an equal or higher role.")
-#                 return
-
-#         # Parse duration
-#         seconds = self.parse_time(time_str)
-#         if seconds <= 0 or seconds > 1209600:  # 14 days in seconds
-#             await ctx.send("Please enter a valid duration (up to 14 days).")
-#             return
-
-#         # Get or create muted role
-#         muted_role = discord.utils.get(ctx.guild.roles, name=self.muted_role_name)
-#         if muted_role is None:
-#             try:
-#                 muted_role = await ctx.guild.create_role(name=self.muted_role_name)
-#                 for channel in ctx.guild.channels:
-#                     await channel.set_permissions(muted_role, send_messages=False, speak=False)
-#             except discord.Forbidden:
-#                 await ctx.send("I do not have permission to create the Muted role.")
-#                 return
-#             except Exception as e:
-#                 await ctx.send(f"An error occurred while creating the Muted role: {e}")
-#                 return
-
-#         # Apply mute
-#         try:
-#             if ctx.guild.me.top_role <= member.top_role:
-#                 await ctx.send("I do not have permission to mute this user due to role hierarchy.")
-#                 return
-#             await member.add_roles(muted_role, reason=reason)
-#             end_time = time.time() + seconds
-#             for channel in ctx.guild.channels:
-#                 if channel.name =='bot-test':
-#                     await channel.set_permissions(muted_role, view_channel=True, send_messages=False, speak=False)
-#                 else:
-#                     await channel.set_permissions(muted_role, view_channel=False)
-#             self.db.add_mute(member.id, ctx.guild.id, end_time)
-#             await ctx.send(f"{member.mention} has been muted for {time_str}. Reason: {reason}")
-#         except discord.Forbidden:
-#             await ctx.send("I do not have permission to mute this user.")
-#         except Exception as e:
-#             await ctx.send(f"An error occurred: {e}")
-
-#     def parse_time(self, time_str):
-#         """
-#         Parses a time string (e.g., '1h30m') into seconds.
-#         """
-#         time_units = {'d': 86400, 'h': 3600, 'm': 60, 's': 1}
-#         matches = re.findall(r'(\d+)([dhms])', time_str.lower())
-#         if not matches:
-#             return 0
-#         seconds = sum(int(amount) * time_units[unit] for amount, unit in matches)
-#         return seconds
-
-#     @commands.command(name='unmute')
-#     @commands.has_permissions(manage_roles=True)
-#     async def unmute(self, ctx, member: discord.Member = None):
-#         """
-#         Unmutes a member.
-
-#         Usage: !unmute @member
-#         """
-#         if member is None:
-#             await ctx.send("Please mention a member to unmute.")
-#             return
-
-#         muted_role = discord.utils.get(ctx.guild.roles, name=self.muted_role_name)
-#         if muted_role in member.roles:
-#             try:
-#                 await member.remove_roles(muted_role, reason=f"Unmuted by {ctx.author}")
-#                 self.db.remove_mute(member.id)
-#                 await ctx.send(f"{member.mention} has been unmuted.")
-#             except discord.Forbidden:
-#                 await ctx.send("I do not have permission to unmute this user.")
-#             except Exception as e:
-#                 await ctx.send(f"An error occurred: {e}")
-#         else:
-#             await ctx.send("This user is not muted.")
-#             self.db.remove_mute(member.id)
-            
-            
-    
-
-#     @check_mutes.before_loop
-#     async def before_check_mutes(self):
-#         """
-#         Ensures the bot is ready before starting the background task.
-#         """
-#         await self.client.wait_until_ready()
-
-# async def setup(client: commands.Bot):
-#     """
-#     Adds the cog to the bot.
-#     """
-#     await client.add_cog(MiscCog(client))
-
-
 import discord
 from discord.ext import commands, tasks
 import time
@@ -170,11 +13,10 @@ class MiscCog(commands.Cog):
 
     def __init__(self, client: commands.Bot):
         self.client = client
-        self.db = client.db  # Ensure your bot has a 'db' attribute for database operations
-        self.muted_role_name = 'Didnt-Listen-to-Mother'
-        self.mutedict = {}  # In-memory tracking for active mutes
+        self.db = client.db 
+        self.muted_role_name = 'muted'
+        self.mutedict = {} 
         self.check_mutes.start()
-        # self.client.add_listener(self.on_ready, 'on_ready')
 
     @commands.Cog.listener()
     async def on_ready(self):
@@ -195,7 +37,6 @@ class MiscCog(commands.Cog):
             if end_time > current_time:
                 self.mutedict[user_id] = end_time
             else:
-                # If the mute has already expired, schedule immediate unmute
                 asyncio.create_task(self.unmute_user(guild_id, user_id))
 
     @tasks.loop(seconds=60)
@@ -362,8 +203,8 @@ class MiscCog(commands.Cog):
             self.mutedict.pop(member.id, None)
 
     @commands.command(name='selfmute')
-    @commands.cooldown(rate=1, per=3600, type=commands.BucketType.user)  # 1 use per hour per user
-    @commands.has_permissions(manage_roles=False)  # Regular users without manage_roles
+    @commands.cooldown(rate=1, per=3600, type=commands.BucketType.user) 
+    @commands.has_permissions(manage_roles=False)  
     async def selfmute(self, ctx, time_str='', *, reason: str = 'No reason provided'):
         """
         Allows users to mute themselves for a specified duration.
@@ -376,18 +217,16 @@ class MiscCog(commands.Cog):
             await ctx.send("Please specify a duration for the mute (e.g., 1h30m).")
             return
 
-        # Parse duration
+        
         seconds = self.parse_time(time_str)
-        if seconds <= 0 or seconds > 3600:  # 1 hour in seconds
+        if seconds <= 0 or seconds > 3600:  
             await ctx.send("Please enter a valid duration (up to 1 hour).")
             return
 
-        # Get or create muted role
         muted_role = discord.utils.get(ctx.guild.roles, name=self.muted_role_name)
         if muted_role is None:
             try:
                 muted_role = await ctx.guild.create_role(name=self.muted_role_name)
-                # Set permissions for the muted role in each channel
                 for channel in ctx.guild.channels:
                     await channel.set_permissions(muted_role, 
                         send_messages=False, 
@@ -403,12 +242,10 @@ class MiscCog(commands.Cog):
                 await ctx.send(f"An error occurred while creating the Muted role: {e}")
                 return
 
-        # Ensure the bot's highest role is above the Muted role
         if ctx.guild.me.top_role <= muted_role:
             await ctx.send("Please ensure my highest role is above the Muted role.")
             return
 
-        # Prevent users from muting themselves multiple times
         if muted_role in member.roles:
             await ctx.send("You are already muted. Please unmute yourself before muting again.")
             return
@@ -418,7 +255,6 @@ class MiscCog(commands.Cog):
             await member.add_roles(muted_role, reason=reason)
             end_time = time.time() + seconds
 
-            # Save mute to the database and in-memory dict
             self.db.add_mute(member.id, ctx.guild.id, end_time)
             self.mutedict[member.id] = end_time
 
@@ -441,9 +277,8 @@ class MiscCog(commands.Cog):
         """
         await interaction.response.defer()
         
-        # Parse duration with a maximum cap for self-mutes
         seconds = self.parse_time(time_str)
-        max_duration = 86400  # Max 24 hours for self-mute
+        max_duration = 86400
         if seconds <= 0:
             await interaction.followup.send("Please enter a valid duration.")
             return
@@ -451,7 +286,6 @@ class MiscCog(commands.Cog):
             seconds = max_duration
             time_str = "24h (maximum allowed)"
 
-        # Get or create muted role
         muted_role = discord.utils.get(interaction.guild.roles, name=self.muted_role_name)
         if muted_role is None:
             try:
@@ -465,7 +299,6 @@ class MiscCog(commands.Cog):
                 await interaction.followup.send(f"An error occurred while creating the Muted role: {e}")
                 return
 
-        # Apply self-mute
         try:
             await interaction.user.add_roles(muted_role, reason=f"Self-mute: {reason}")
             end_time = time.time() + seconds
@@ -497,7 +330,7 @@ class MiscCog(commands.Cog):
             await interaction.response.send_message(f"An error occurred: {error}", ephemeral=True)
 
     @commands.command(name='selfunmute')
-    @commands.has_permissions(manage_roles=False)  # Regular users without manage_roles
+    @commands.has_permissions(manage_roles=False)  
     async def selfunmute(self, ctx):
         """
         Allows users to unmute themselves before the mute duration expires.
@@ -531,12 +364,11 @@ class MiscCog(commands.Cog):
         
         muted_role = discord.utils.get(interaction.guild.roles, name=self.muted_role_name)
         if muted_role in interaction.user.roles:
-            # Check if the self-mute has been active for at least 15 minutes
             mute_info = self.db.get_mute(interaction.user.id)
             if mute_info:
                 mute_start = mute_info['end_time'] - self.parse_time(mute_info.get('duration', '1h'))
                 time_elapsed = time.time() - mute_start
-                if time_elapsed < 900:  # 15 minutes in seconds
+                if time_elapsed < 900: 
                     remaining = 900 - time_elapsed
                     await interaction.followup.send(f"You must wait at least 15 minutes before unmuting yourself. You can request again in {int(remaining/60)} minutes and {int(remaining%60)} seconds.")
                     return

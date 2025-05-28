@@ -8,6 +8,10 @@ from discord import app_commands
 from discord.app_commands import AppCommandError
 from discord.ext import commands
 from flask import Flask
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 from cogs.db import DatabaseCog
 
@@ -32,6 +36,10 @@ intents.message_content = True
 client = commands.Bot(command_prefix=bot_prefix, help_command=None, intents=intents)
 client.config = config
 
+# Add environment variables to config
+client.config["bot"]["token"] = os.getenv("BOT_TOKEN")
+client.config["db"] = os.getenv("MONGODB_URI")
+
 async def setup():
     logging.info(f"Adding cogs to bot")
     database_cog = DatabaseCog(client)
@@ -50,7 +58,7 @@ async def setup():
     except Exception as e:
         logging.error(f"Failed to sync commands with Discord: {e}")
     
-    await client.start(config["bot"]["token"])
+    await client.start(os.getenv("BOT_TOKEN"))
 
 # Error handling
 @client.tree.error
@@ -115,13 +123,13 @@ def home():
 # Start the Flask server in a background thread
 def run_flask_server():
     logging.info("HTTP server started")
-    port = int(os.getenv("PORT", 8080))
+    port = int(os.getenv("PORT", 8084))
     app.run(host='0.0.0.0', port=port, debug=True, use_reloader=False)
 
 # Run the bot and the Flask server concurrently
 async def main():
     loop = asyncio.get_event_loop()
-    loop.run_in_executor(None, run_flask_server)  # Run Flask server in the background
+    loop.run_in_executor(None, run_flask_server)  
     await setup()
 
 # Start the asyncio event loop and run both the bot and Flask server

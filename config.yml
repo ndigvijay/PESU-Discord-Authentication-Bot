@@ -1,5 +1,5 @@
 bot:
-    token: 'MTI5NzU3NTYzNzU3MzE3MzMwMA.GV0f4Z.5RkStRnKZPcmxZ8N4OIOBbgugoqtBurhjX5bys'
+    token: ''
     developer_user_ids:
         - 1129342265723211827
     developer_guild_ids:
@@ -10,4 +10,4 @@ bot:
     prefix: '!'
     verification_role_id: "1373648829051568259"
 
-db: 'mongodb+srv://ndv_310:ndv_310@cluster0.iyfagot.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'
+db: ''

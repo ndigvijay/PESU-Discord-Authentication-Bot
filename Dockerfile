@@ -32,7 +32,8 @@ RUN apt install mongodb-org -y
 
 COPY bot /bot
 COPY requirements.txt /requirements.txt
-COPY config.yml /config.yml
+COPY config.yml /bot/config.yml
+COPY .env /.env
 
 # Install requirements using Python 3.10
 # RUN python3.10 -m pip install -r requirements.txt

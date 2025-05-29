@@ -80,7 +80,7 @@ class AuthenticationCog(commands.Cog):
                 await interaction.followup.send(embed=embed)
             else:
                 authentication_result = self.check_pesu_academy_credentials(username=username, password=password)
-                if authentication_result and authentication_result["status"]:
+                if authentication_result and authentication_result["status"] and authentication_result["profile"] and authentication_result["profile"]["prn"] and authentication_result["profile"]["program"]:
                     try:
                         old_role = guild.get_role(old_role_id)
                         if old_role:

@@ -18,6 +18,7 @@ class AuthenticationCog(commands.Cog):
         self.confessions = {}
         
         
+    @staticmethod
     def check_valid_prn(prn: str) -> bool:
         """
         Checks if the given PRN is valid

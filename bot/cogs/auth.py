@@ -54,18 +54,18 @@ class AuthenticationCog(commands.Cog):
     @app_commands.command(name="auth", description="Verify your discord account with your PESU Academy credentials")
     async def authenticate(self, interaction: discord.Interaction, username: str, password: str):
         # use only PRN as username , if email return error
-        if '@' in username:
+        # if '@' in username:
+        #     embed = discord.Embed(
+        #         title="Verification Failed",
+        #         description="Please use your PRN as username",
+        #         color=discord.Color.red(),
+        #     )
+        #     await interaction.followup.send(embed=embed)
+        #     return        
+        if not AuthenticationCog.check_valid_prn(username):
             embed = discord.Embed(
                 title="Verification Failed",
-                description="Please use your PRN as username",
-                color=discord.Color.red(),
-            )
-            await interaction.followup.send(embed=embed)
-            return        
-        if not self.check_valid_prn(username):
-            embed = discord.Embed(
-                title="Verification Failed",
-                description="Please use a valid PRN",
+                description="Please use a valid PRN.",
                 color=discord.Color.red(),
             )
             await interaction.followup.send(embed=embed)

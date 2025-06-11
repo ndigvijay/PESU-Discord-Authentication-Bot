@@ -16,6 +16,26 @@ class AuthenticationCog(commands.Cog):
         self.client = client
         self.db = db
         self.confessions = {}
+        
+        
+    def check_valid_prn(prn: str) -> bool:
+        """
+        Checks if the given PRN is valid
+        """
+        # after PES we need to have '1' or '2' for campus , then the year of student then the roll number
+        if prn[:3] != 'PES':
+            return False
+        if prn[3] not in ['1', '2']:
+            return False
+        year = prn[4:6]
+        try:
+            int(year)  
+            if(int(year) < 18):
+                return False
+        except ValueError:
+            return False
+        return True
+        
 
     @staticmethod
     def check_pesu_academy_credentials(username: str, password: str) -> Optional[dict]:
@@ -33,6 +53,23 @@ class AuthenticationCog(commands.Cog):
 
     @app_commands.command(name="auth", description="Verify your discord account with your PESU Academy credentials")
     async def authenticate(self, interaction: discord.Interaction, username: str, password: str):
+        # use only PRN as username , if email return error
+        if '@' in username:
+            embed = discord.Embed(
+                title="Verification Failed",
+                description="Please use your PRN as username",
+                color=discord.Color.red(),
+            )
+            await interaction.followup.send(embed=embed)
+            return        
+        if not self.check_valid_prn(username):
+            embed = discord.Embed(
+                title="Verification Failed",
+                description="Please use a valid PRN",
+                color=discord.Color.red(),
+            )
+            await interaction.followup.send(embed=embed)
+            return
         logging.info(f"Authenticating {interaction.user}")
         await interaction.response.defer(ephemeral=True)
         verification_role_id = 1373648829051568259  # Replace with dynamic retrieval if needed

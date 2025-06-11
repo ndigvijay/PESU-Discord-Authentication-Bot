@@ -54,6 +54,8 @@ class AuthenticationCog(commands.Cog):
 
     @app_commands.command(name="auth", description="Verify your discord account with your PESU Academy credentials")
     async def authenticate(self, interaction: discord.Interaction, username: str, password: str):
+        await interaction.response.defer(ephemeral=True)
+        
         # use only PRN as username , if email return error
         # if '@' in username:
         #     embed = discord.Embed(
@@ -72,7 +74,6 @@ class AuthenticationCog(commands.Cog):
             await interaction.followup.send(embed=embed)
             return
         logging.info(f"Authenticating {interaction.user}")
-        await interaction.response.defer(ephemeral=True)
         verification_role_id = 1373648829051568259  # Replace with dynamic retrieval if needed
         old_role_id = 1373650258013454376
         guild_id = 1340719908383752255  # The guild ID where verification is happening

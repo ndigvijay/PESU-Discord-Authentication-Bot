@@ -56,15 +56,6 @@ class AuthenticationCog(commands.Cog):
     async def authenticate(self, interaction: discord.Interaction, username: str, password: str):
         await interaction.response.defer(ephemeral=True)
         
-        # use only PRN as username , if email return error
-        # if '@' in username:
-        #     embed = discord.Embed(
-        #         title="Verification Failed",
-        #         description="Please use your PRN as username",
-        #         color=discord.Color.red(),
-        #     )
-        #     await interaction.followup.send(embed=embed)
-        #     return        
         if not AuthenticationCog.check_valid_prn(username):
             embed = discord.Embed(
                 title="Verification Failed",

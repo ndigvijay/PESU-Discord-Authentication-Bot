@@ -30,6 +30,6 @@ The users can verify themselves using the `/auth` command anytime once the setup
     ```
 5. Run the bot using the `bot.py` file
 
-add bot token and db url in env file
+6. add bot token and db url in env file
 
 <hr>

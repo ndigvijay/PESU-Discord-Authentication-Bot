@@ -26,7 +26,7 @@ The users can verify themselves using the `/auth` command anytime once the setup
             - <discord_developer_channel_id_2>
 
         prefix: 'bot-prefix'
-    db: '' # if local host - 'mongodb://localhost:27017/'
+    db: '' 
     ```
 5. Run the bot using the `bot.py` file
 

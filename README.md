@@ -10,7 +10,11 @@ The users can verify themselves using the `/auth` command anytime once the setup
 
 1. Clone the repository
 2. Make sure you have Python 3.10 installed
-3. Install the dependencies using `pip install -r requirements.txt`
+3. Create a virtual environment using `python -m venv venv`
+4. Activate the virtual environment:
+   - On Windows: `venv\Scripts\activate`
+   - On macOS/Linux: `source venv/bin/activate`
+5. Install the dependencies using `pip install -r requirements.txt`
 4. modify the `config.yml` file in the root directory of the project:
     ```yaml
     bot:
